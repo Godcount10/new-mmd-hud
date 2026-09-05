@@ -1,0 +1,38 @@
+# Dependencies and build output
+/node_modules/
+/dist/
+/dist-hud/
+/coverage/
+*.tsbuildinfo
+
+# Local model resources and generated publication assets
+/public/
+/release-assets/
+/models/
+/mmd-spine-models/
+
+# Local reports, logs, and caches
+/reports/
+/.cache/
+/.vite/
+*.log
+
+# Credentials and machine-specific configuration
+.env
+.env.*
+!.env.example
+!.env.*.example
+.npmrc
+*.pem
+*.key
+*.p12
+*.pfx
+/.codex/
+/.agents/
+/.vscode/
+/.idea/
+
+# Operating system metadata
+.DS_Store
+Thumbs.db
+Desktop.ini
