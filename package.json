@@ -11,6 +11,8 @@
     "test:live2d": "node --test tests/live2d-contracts.test.mjs",
     "generate:spine-catalog": "node scripts/generate-spine-catalog.mjs",
     "generate:brown-dust-catalog": "node scripts/generate-brown-dust-catalog.mjs",
+    "prepare:brown-dust-release": "node scripts/prepare-brown-dust-release.mjs",
+    "publish:brown-dust-release": "node scripts/publish-brown-dust-release.mjs",
     "generate:spine-thumbnails": "node scripts/generate-spine-thumbnails.mjs",
     "prepare:spine-release": "node scripts/prepare-spine-release.mjs",
     "test:spine": "node --test tests/spine-contracts.test.mjs",

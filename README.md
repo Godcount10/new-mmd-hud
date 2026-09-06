@@ -10,7 +10,7 @@
 
 - 包含 `src/renderers/spine/nikkeCatalog.generated.ts` 图鉴索引和 `spine-release.json` 外链配置；索引不是模型资源本体，普通构建无需重新生成它。
 - 不包含 `public` 中的本地模型、`release-assets`、旁边的 `mmd-spine-models`、`node_modules`、构建产物、报告、缓存或本机凭据。这些文件仍保留在原电脑上，`.gitignore` 只排除上传，不删除文件。
-- 模型发布资源单独保存在 [Godcount10/mmd-models](https://github.com/Godcount10/mmd-models)。生产 HUD 根据 `spine-release.json` 使用已发布的 CDN 资源。
+- 模型发布资源与源码分开保存：NIKKE 在 [mmd-models](https://github.com/Godcount10/mmd-models)，碧蓝航线在 [mmd-live2d-models](https://github.com/Godcount10/mmd-live2d-models)，棕色尘埃 2 在 [mmd-brown-dust-2-models](https://github.com/Godcount10/mmd-brown-dust-2-models)。生产 HUD 的 NIKKE 外链由 `spine-release.json` 配置；棕色尘埃 2 的发布和本地恢复说明见 [BROWN-DUST-2.md](./BROWN-DUST-2.md)。
 
 接收源码后，建议安装 Node.js 22，再运行 `npm ci` 安装锁定版本的依赖。`npm run build:hud` 可直接使用现有图鉴索引生成引用 CDN 资源的注入 JSON，不需要下载本地模型库。
 
@@ -82,6 +82,9 @@ npm run build
 | --- | --- | --- | --- |
 | NIKKE / Spine | `npm run dev` | `npm run build:hud -- nikke` | `dist-hud/nikke/` |
 | 碧蓝航线 / Live2D | `npm run dev:live2d` | `npm run build:live2d` | `dist-hud/live2d/` |
+| 龙族 / Dragon Raja | `npm run dev:dragon-raja` | `npm run build:dragon-raja` | `dist-hud/dragon-raja/` |
+
+Spine 实例的本地首页先选择 NIKKE 或棕色尘埃 2，再进入对应图鉴。棕色尘埃 2 包含 492 个模型，仍然在确认流量后才加载。龙族实例默认端口为 5183，功能与 SDK 适配边界见 [DRAGON-RAJA.md](./DRAGON-RAJA.md)。
 
 Live2D 默认端口为 5182，直接舞台地址为 `http://127.0.0.1:5182/stage-preview.html`。它按确认后加载的方式提供 243 个模型入口，支持动作、表情、暂停、镜头缩放/拖动和卸载。源码中的轻量目录不是模型文件；原始文件和生成播放包位于独立的 [mmd-live2d-models](https://github.com/Godcount10/mmd-live2d-models) 资源仓库。
 
