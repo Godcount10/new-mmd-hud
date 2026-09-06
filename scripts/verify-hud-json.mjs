@@ -1,9 +1,15 @@
 import assert from 'node:assert/strict'
-import { readFile, writeFile } from 'node:fs/promises'
+import { readFile, writeFile, mkdir } from 'node:fs/promises'
+import { join } from 'node:path'
+import { instanceConfig } from './instance-config.mjs'
 import { Script, createContext, runInContext } from 'node:vm'
 const root = new URL('../', import.meta.url)
-const source = await readFile(new URL('dist-hud/mmd-hud.js', root), 'utf8')
-const card = JSON.parse(await readFile(new URL('dist-hud/mmd-hud.json', root), 'utf8'))
+const selected = instanceConfig()
+const source = await readFile(join(selected.outDir, 'mmd-hud.js'), 'utf8')
+const card = JSON.parse(await readFile(join(selected.outDir, 'mmd-hud.json'), 'utf8'))
+const modules = JSON.parse(await readFile(join(selected.outDir, 'bundle-modules.json'), 'utf8'))
+assert.equal(modules.instance, selected.id)
+for (const id of modules.modules) assert.ok(!selected.forbiddenModules.some(fragment => id.includes(fragment)), id)
 new Script(source)
 const injected = []
 const document = { createElement: () => ({ dataset: {}, textContent: '' }), head: { appendChild: element => injected.push(element.textContent) } }
@@ -26,5 +32,6 @@ assert.ok(!source.includes('process.env.NODE_ENV'))
 assert.ok(!source.includes('http://127.0.0.1'))
 const report = { rules: card.regex_scripts.length, largest: Math.max(...card.regex_scripts.map(row => row.replaceString.length)),
   sourceBytes: Buffer.byteLength(source), onePassReconstruction: true, syntax: true, duplicateStartGuard: true }
-await writeFile(new URL('reports/injection-audit.json', root), JSON.stringify(report, null, 2))
+await mkdir(new URL('reports/', root), { recursive: true })
+await writeFile(new URL(`reports/injection-audit-${selected.id}.json`, root), JSON.stringify({ instance: selected.id, isolationPassed: true, ...report }, null, 2))
 console.log(report)

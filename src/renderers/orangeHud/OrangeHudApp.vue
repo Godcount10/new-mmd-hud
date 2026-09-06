@@ -2,7 +2,7 @@
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import type { HudFeatureContext } from '../../features/types'
 import type { HudState } from '../../core/hudStore'
-import type { GameState } from '../../domain/gameStore'
+import type { GameState, GameStore } from '../../domain/gameStore'
 import SpineViewport from '../spine/SpineViewport.vue'
 import { demoSpineConfig } from '../spine/demoAssets'
 import type { SpineAssetConfig } from '../spine/spineTypes'
@@ -12,12 +12,13 @@ const FALLBACK_ENERGY = 82
 
 const props = defineProps<{
   context: HudFeatureContext
+  domain: GameStore
 }>()
 
 const spineConfig: SpineAssetConfig = props.context.window.__MMD_SPINE_ASSET__ ?? demoSpineConfig
 
 const hudState = ref<HudState>(props.context.store.getState())
-const gameState = ref<GameState>(props.context.domain.getState())
+const gameState = ref<GameState>(props.domain.getState())
 const lastEvent = ref('READY')
 
 const xp = computed(() => clampPercent(gameState.value.variables.xp, FALLBACK_XP))
@@ -40,7 +41,7 @@ function closeStage(): void {
 
 function togglePhase(): void {
   const currentPhase = gameState.value.phase
-  props.context.domain.dispatch({
+  props.domain.dispatch({
     type: 'phase:set',
     phase: currentPhase === 'running' ? 'paused' : 'running',
   })
@@ -48,12 +49,12 @@ function togglePhase(): void {
 }
 
 function syncXp(): void {
-  props.context.domain.dispatch({
+  props.domain.dispatch({
     type: 'variable:set',
     key: 'xp',
     value: Math.min(100, xp.value + 10),
   })
-  props.context.domain.dispatch({ type: 'tick' })
+  props.domain.dispatch({ type: 'tick' })
   lastEvent.value = 'SYNC +10'
 }
 
@@ -65,7 +66,7 @@ onMounted(() => {
   eventCleanups.push(props.context.events.on('theme:change', () => { lastEvent.value = 'THEME CHANGED' }))
   eventCleanups.push(props.context.events.on('stage:close', () => { lastEvent.value = 'STAGE CLOSED' }))
   eventCleanups.push(props.context.store.subscribe((state) => { hudState.value = state }))
-  eventCleanups.push(props.context.domain.subscribe((state) => { gameState.value = state }))
+  eventCleanups.push(props.domain.subscribe((state) => { gameState.value = state }))
 })
 
 onBeforeUnmount(() => {

@@ -1,6 +1,5 @@
 import { EventBus } from '../core/eventBus'
 import { HudStore } from '../core/hudStore'
-import { GameStore } from '../domain/gameStore'
 import { FeatureRegistry } from '../features/registry'
 import type { HudEventMap, HudFeatureContext } from '../features/types'
 import { createMockPlatformAdapter, type MmdPlatformAdapter } from '../platform/contracts'
@@ -13,7 +12,6 @@ import type { HudRenderer } from '../renderers/types'
 export type HudRuntimeOptions = {
   platform: MmdPlatformAdapter
   store?: HudStore
-  domain?: GameStore
   features?: FeatureRegistry
   renderers?: RendererRegistry
 }
@@ -24,7 +22,6 @@ export type HudRuntimeOptions = {
  */
 export class HudRuntime {
   readonly store: HudStore
-  readonly domain: GameStore
   readonly events = new EventBus<HudEventMap>()
   readonly features: FeatureRegistry
   readonly renderers: RendererRegistry
@@ -36,7 +33,6 @@ export class HudRuntime {
   constructor(options: HudRuntimeOptions) {
     this.platform = options.platform
     this.store = options.store ?? new HudStore()
-    this.domain = options.domain ?? new GameStore()
     this.features = options.features ?? new FeatureRegistry()
     this.renderers = options.renderers ?? new RendererRegistry()
   }
@@ -82,7 +78,6 @@ export class HudRuntime {
     return {
       platform: this.platform,
       store: this.store,
-      domain: this.domain,
       events: this.events,
       window: this.platform.window,
       document: this.platform.document,

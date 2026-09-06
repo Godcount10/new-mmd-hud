@@ -90,5 +90,6 @@ declare global {
     __MMD_SPINE_CATALOG__?: SpineCatalogEntry[]
     /** Explicit embedding/test override, separate from the last mounted catalog. */
     __MMD_SPINE_CATALOG_OVERRIDE__?: SpineCatalogEntry[]
+    __MMD_SPINE_GAME_CATALOGS__?: Record<string, SpineCatalogEntry[]>
   }
 }

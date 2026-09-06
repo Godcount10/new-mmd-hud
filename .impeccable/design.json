@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-05T19:26:48Z",
+  "title": "Design System: HOST Renderer HUDs",
+  "extensions": {
+    "colorMeta": {
+      "live2d-bg": { "role": "neutral", "displayName": "Live2D Near Black" },
+      "live2d-panel": { "role": "neutral", "displayName": "Live2D Charcoal Band" },
+      "live2d-orange": { "role": "primary", "displayName": "Live2D Action Orange" },
+      "live2d-teal": { "role": "secondary", "displayName": "Live2D Status Teal" },
+      "spine-bg": { "role": "neutral", "displayName": "Spine Near Black" },
+      "spine-panel": { "role": "neutral", "displayName": "Spine Warm Dark Panel" },
+      "spine-orange": { "role": "primary", "displayName": "Spine Action Orange" },
+      "spine-teal": { "role": "secondary", "displayName": "Spine Status Teal" }
+    },
+    "typographyMeta": {
+      "live2d-title": { "displayName": "Live2D Interface Title", "purpose": "The compact stage identity; reduces to 20px at 680px and below." },
+      "live2d-body": { "displayName": "Live2D Body", "purpose": "Stage copy and status messages." },
+      "live2d-label": { "displayName": "Live2D Field Label", "purpose": "Selection and playback field labels and inherited field text." },
+      "live2d-command": { "displayName": "Live2D Command", "purpose": "Primary and secondary command labels." },
+      "spine-title": { "displayName": "Spine Gallery Title", "purpose": "Spine gallery identity only; reduces to 27px at 680px and below." }
+    },
+    "shadows": [
+      { "name": "spine-card", "value": "0 8px 18px rgb(0 0 0 / 24%)", "purpose": "Resting Spine gallery cards only." },
+      { "name": "spine-card-hover", "value": "0 14px 28px rgb(0 0 0 / 42%)", "purpose": "Hovered Spine gallery cards only." },
+      { "name": "spine-dialog", "value": "0 22px 52px rgb(0 0 0 / 55%)", "purpose": "Spine consent dialog only; Live2D has no box shadow." }
+    ],
+    "motion": [
+      { "name": "live2d-spinner", "value": ".8s linear infinite", "purpose": "Loading rotation; disabled under prefers-reduced-motion: reduce." },
+      { "name": "spine-control-state", "value": "160ms ease", "purpose": "Spine field and command color transitions; reduced-motion rules shorten transitions." }
+    ],
+    "breakpoints": [
+      { "name": "renderer-mobile", "value": "680px" },
+      { "name": "spine-small-mobile", "value": "370px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Live2D Primary Command",
+      "kind": "button",
+      "refersTo": "live2d-button-primary",
+      "description": "Load and consent commands in the Live2D renderer.",
+      "html": "<button class=\"ds-l2d-primary\" type=\"button\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"17\" height=\"17\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\"/><polyline points=\"7 10 12 15 17 10\"/><line x1=\"12\" x2=\"12\" y1=\"15\" y2=\"3\"/></svg>Load model</button>",
+      "css": ".ds-l2d-primary{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:40px;border:1px solid var(--l2d-orange,#ff8b35);border-radius:4px;padding:8px 14px;background:var(--l2d-orange,#ff8b35);color:#15100b;font:650 13px/1.5 Bahnschrift,'Microsoft YaHei',sans-serif;letter-spacing:0;cursor:pointer}.ds-l2d-primary:hover:not(:disabled){background:#ffa665}.ds-l2d-primary:focus-visible{outline:2px solid var(--l2d-orange,#ff8b35);outline-offset:3px}.ds-l2d-primary:disabled{opacity:.4;cursor:default}"
+    },
+    {
+      "name": "Live2D Secondary Command",
+      "kind": "button",
+      "refersTo": "live2d-button-secondary",
+      "description": "Cancel and recovery commands in the Live2D renderer.",
+      "html": "<button class=\"ds-l2d-secondary\" type=\"button\">Cancel</button>",
+      "css": ".ds-l2d-secondary{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:40px;border:1px solid var(--l2d-line,#383b40);border-radius:4px;padding:8px 14px;background:#202226;color:var(--l2d-text,#f1f3f5);font:650 13px/1.5 Bahnschrift,'Microsoft YaHei',sans-serif;letter-spacing:0;cursor:pointer}.ds-l2d-secondary:hover:not(:disabled){border-color:var(--l2d-orange,#ff8b35)}.ds-l2d-secondary:focus-visible{outline:2px solid var(--l2d-orange,#ff8b35);outline-offset:3px}.ds-l2d-secondary:disabled{opacity:.4;cursor:default}"
+    },
+    {
+      "name": "Live2D Icon Tool",
+      "kind": "button",
+      "refersTo": "live2d-icon-button",
+      "description": "Fixed-size model playback and stage tools; Lucide path preserved in the standalone preview.",
+      "html": "<button class=\"ds-l2d-icon\" type=\"button\" title=\"Pause playback\" aria-label=\"Pause playback\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect x=\"14\" y=\"3\" width=\"5\" height=\"18\" rx=\"1\"/><rect x=\"5\" y=\"3\" width=\"5\" height=\"18\" rx=\"1\"/></svg></button>",
+      "css": ".ds-l2d-icon{display:inline-grid;place-items:center;flex:0 0 40px;width:40px;height:40px;padding:0;border:1px solid var(--l2d-line,#383b40);border-radius:4px;background:#1c1e22;color:var(--l2d-text,#f1f3f5);cursor:pointer}.ds-l2d-icon:hover:not(:disabled){border-color:var(--l2d-orange,#ff8b35)}.ds-l2d-icon:focus-visible{outline:2px solid var(--l2d-orange,#ff8b35);outline-offset:3px}.ds-l2d-icon:disabled{opacity:.4;cursor:default}"
+    },
+    {
+      "name": "Live2D Search Field",
+      "kind": "input",
+      "refersTo": "live2d-field",
+      "description": "Model filename filter with a persistent label.",
+      "html": "<label class=\"ds-l2d-label\">Filter<input class=\"ds-l2d-field\" type=\"search\" placeholder=\"Model filename\" aria-label=\"Filter Live2D models\"></label>",
+      "css": ".ds-l2d-label{display:grid;gap:5px;min-width:0;color:var(--l2d-muted,#b2b8c1);font:12px/1.5 Bahnschrift,'Microsoft YaHei',sans-serif;letter-spacing:0}.ds-l2d-field{min-width:0;width:100%;height:40px;border:1px solid var(--l2d-line,#383b40);border-radius:4px;background:#1c1e22;padding:0 10px;color:inherit;font:inherit;caret-color:var(--l2d-orange,#ff8b35);color-scheme:dark}.ds-l2d-field::placeholder{color:var(--l2d-muted,#b2b8c1)}.ds-l2d-field:focus-visible{outline:2px solid var(--l2d-orange,#ff8b35);outline-offset:3px}.ds-l2d-field:disabled{opacity:.4;cursor:default}"
+    },
+    {
+      "name": "Live2D Model Selector",
+      "kind": "input",
+      "refersTo": "live2d-field",
+      "description": "Native selector that displays source model identifiers.",
+      "html": "<label class=\"ds-l2d-select-label\">Model<select class=\"ds-l2d-select\" aria-label=\"Live2D model\"><option value=\"beierfasite_2\">beierfasite_2</option></select></label>",
+      "css": ".ds-l2d-select-label{display:grid;gap:5px;min-width:0;color:var(--l2d-muted,#b2b8c1);font:12px/1.5 Bahnschrift,'Microsoft YaHei',sans-serif;letter-spacing:0}.ds-l2d-select{min-width:0;width:100%;height:40px;border:1px solid var(--l2d-line,#383b40);border-radius:4px;background:#1c1e22;padding:0 10px;color:inherit;font:inherit;color-scheme:dark}.ds-l2d-select:focus-visible{outline:2px solid var(--l2d-orange,#ff8b35);outline-offset:3px}.ds-l2d-select:disabled{opacity:.4;cursor:default}"
+    }
+  ],
+  "narrative": {
+    "overview": "This records the existing orange-and-black HUD direction for the Live2D stage and its incumbent Spine counterpart. It is an implementation record for these renderers, not a new identity for the HOST preview shell or other cards. No new creative metaphor was established.\n\nLive2D uses compact selection and playback bands around an unframed canvas. Orange marks actions and transfer estimates, pale text carries model identity, and teal carries runtime status. The Spine renderer uses a warmer neutral variant and also includes a character gallery.",
+    "keyCharacteristics": [
+      "Renderer-scoped color variants within the confirmed orange-and-black direction.",
+      "Compact, labeled controls and icon tools surrounding the model surface.",
+      "Explicit model loading consent with a visible transfer estimate."
+    ],
+    "rules": [],
+    "dos": [
+      "Do keep each renderer's prefixed palette and component variants scoped to that renderer.",
+      "Do preserve the full canvas region and stable control dimensions when changing the Live2D toolbar.",
+      "Do retain explicit loading consent, transfer estimates, accessible icon names, and visible keyboard focus."
+    ],
+    "donts": [
+      "Don't apply this renderer record as a replacement identity for the HOST preview shell.",
+      "Don't present model file identifiers as invented character names."
+    ]
+  }
+}

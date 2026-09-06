@@ -1,9 +1,10 @@
-import { createReadStream, existsSync, statSync } from 'node:fs'
+import { createReadStream, existsSync, statSync, readFileSync } from 'node:fs'
 import { extname, resolve, sep } from 'node:path'
 import { defineConfig, type Plugin } from 'vite'
 import vue from '@vitejs/plugin-vue'
 
 const SPINE_ROUTE = '/_spine-models/'
+const instances: Record<string, { localEntry: string; remoteEntry: string; forbiddenModules: string[] }> = JSON.parse(readFileSync(resolve('hud-instances.json'), 'utf8'))
 const SPINE_LIBRARY_ROOT = resolve(
   process.cwd(),
   '..',
@@ -32,6 +33,9 @@ function localSpineLibraryPlugin(): Plugin {
           [SPINE_ROUTE, SPINE_LIBRARY_ROOT],
           ['/_model-files/', resolve(SPINE_LIBRARY_ROOT, '..')],
           ['/_model-release/', resolve(process.cwd(), 'release-assets')],
+          ['/_brown-model-files/', resolve(process.cwd(), '../model-resources/brown-dust-2/assets')],
+          ['/_brown-model-release/', resolve(process.cwd(), 'release-assets/brown-dust-2')],
+          ['/_live2d-release/', resolve(process.cwd(), '../mmd-live2d-models/azur-lane/v1')],
         ]
         const route = routes.find(([prefix]) => pathname.startsWith(prefix))
         if (!route) return next()
@@ -56,10 +60,19 @@ function localSpineLibraryPlugin(): Plugin {
   }
 }
 
-function hudArtifactPlugin(): Plugin {
+function hudArtifactPlugin(instanceId: string): Plugin {
   return {
     name: 'mmd-hud-artifact',
-    generateBundle() {
+    generateBundle(_options, bundle) {
+      const modules = [...new Set(Object.values(bundle).flatMap(chunk => chunk.type === 'chunk'
+        ? Object.entries(chunk.modules).filter(([, info]) => info.renderedLength > 0).map(([id]) => id.replaceAll('\\', '/')) : []))]
+      const forbidden = instances[instanceId].forbiddenModules
+      const violations = modules.filter(id => forbidden.some(fragment => id.includes(fragment)))
+      if (violations.length) this.error(`Instance ${instanceId} includes forbidden modules: ${violations.join(', ')}`)
+      this.emitFile({ type: 'asset', fileName: 'bundle-modules.json', source: JSON.stringify({
+        instance: instanceId, forbiddenModules: forbidden, isolationPassed: true,
+        modules: modules.map(id => id.replace(process.cwd().replaceAll('\\', '/') + '/', '')),
+      }, null, 2) })
       this.emitFile({
         type: 'asset',
         fileName: 'mmd-hud.snippet.html',
@@ -74,20 +87,36 @@ function hudArtifactPlugin(): Plugin {
 
 export default defineConfig(({ mode }) => {
   const isHudBuild = mode === 'hud'
+  const instanceId = process.env.MMD_HUD_INSTANCE || (mode === 'live2d' ? 'live2d' : mode === 'dragon-raja' ? 'dragon-raja' : 'nikke')
+  if (!Object.prototype.hasOwnProperty.call(instances, instanceId)) throw new Error(`Unknown HUD instance: ${instanceId}`)
+  const entry = instances[instanceId][isHudBuild || process.env.MMD_ASSETS === 'remote' ? 'remoteEntry' : 'localEntry']
+  const shared = {
+    resolve: { alias: { '@hud-instance': resolve(entry) } },
+    define: {
+      __HUD_INSTANCE__: JSON.stringify(instanceId),
+      __DRAGON_RAJA_MEDIA__: JSON.stringify({
+        welcomePosterUrl: '', cassellCrestUrl: '', storyDesktopUrl: '', storyMobileUrl: '',
+        storyPosterUrl: '', alchemyAssetsUrl: '', localMapUrl: '', codexAssetsUrl: '',
+        paperGrainUrl: '', brushFontUrl: '', storySerifFontUrl: '', storySansFontUrl: '', storyMonoFontUrl: '',
+      }),
+    },
+  }
   if (isHudBuild) {
     return {
+      ...shared,
       // Vue's runtime references process.env.NODE_ENV. The standalone bundle
       // runs directly in the MMD browser, so replace it at build time instead
       // of relying on a Node.js process global at runtime.
       define: {
+        ...shared.define,
         'process.env.NODE_ENV': JSON.stringify('production'),
       },
-      plugins: [vue(), hudArtifactPlugin()],
+      plugins: [vue(), hudArtifactPlugin(instanceId)],
       root: '.',
       base: './',
       build: {
         copyPublicDir: false,
-        outDir: 'dist-hud',
+        outDir: `dist-hud/${instanceId}`,
         emptyOutDir: true,
         target: 'es2020',
         sourcemap: false,
@@ -108,12 +137,13 @@ export default defineConfig(({ mode }) => {
   }
 
   return {
+    ...shared,
     plugins: [vue(), localSpineLibraryPlugin()],
     root: '.',
     base: './',
     server: {
       host: '127.0.0.1',
-      port: 5180,
+      port: instanceId === 'live2d' ? 5182 : instanceId === 'dragon-raja' ? 5183 : 5180,
     },
   }
 })

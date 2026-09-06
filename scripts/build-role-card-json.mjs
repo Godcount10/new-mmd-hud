@@ -3,9 +3,11 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { instanceConfig } from './instance-config.mjs'
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url))
-const DIST_DIR = join(ROOT, 'dist-hud')
+const selected = instanceConfig()
+const DIST_DIR = selected.outDir
 const SOURCE_FILE = join(DIST_DIR, 'mmd-hud.js')
 
 // MMD accepts at most 20,000 characters in one replacement. Keep the same
@@ -133,7 +135,7 @@ function validateRules(source, chunks, scripts) {
 
 const id = buildId()
 const source = await readFile(SOURCE_FILE, 'utf8')
-const release = JSON.parse(await readFile(join(ROOT, 'spine-release.json'), 'utf8'))
+const release = selected.releaseFile ? JSON.parse(await readFile(join(ROOT, selected.releaseFile), 'utf8')) : null
 const { chunks, scripts } = createRules(source, id)
 validateRules(source, chunks, scripts)
 
@@ -146,6 +148,7 @@ const importData = {
 const placeholders = `${scripts.map((script) => script.findRegex).join('')}\n`
 const replacementLengths = scripts.map((script) => script.replaceString.length)
 const manifest = {
+  instance: selected.id,
   modelRelease: release,
   version: 1,
   format: 'mmd-regex-role-card',
@@ -168,9 +171,20 @@ const manifest = {
 
 await mkdir(DIST_DIR, { recursive: true })
 const notices = []
-for (const dependency of ['@esotericsoftware/spine-webgl', 'spine-webgl-41', 'vue', 'lucide-vue-next']) {
-  notices.push(`${dependency}\n\n${await readFile(join(ROOT, 'node_modules', dependency, 'LICENSE'), 'utf8')}`)
+async function dependencyNotice(dependency) {
+  const packageRoot = join(ROOT, 'node_modules', dependency)
+  for (const filename of ['LICENSE', 'LICENSE.md', 'License', 'license']) {
+    try { return `${dependency}\n\n${await readFile(join(packageRoot, filename), 'utf8')}` } catch { /* try next conventional name */ }
+  }
+  try {
+    const metadata = JSON.parse(await readFile(join(packageRoot, 'package.json'), 'utf8'))
+    return `${dependency}\n\nLicense: ${typeof metadata.license === 'string' ? metadata.license : 'see package metadata'}`
+  } catch {
+    return `${dependency}\n\nLicense notice unavailable in installed package.`
+  }
 }
+for (const dependency of selected.licenses) notices.push(await dependencyNotice(dependency))
+if (selected.id === 'live2d') notices.push(await readFile(join(ROOT, 'vendor/live2d/NOTICE.txt'), 'utf8'))
 await writeFile(join(DIST_DIR, 'THIRD-PARTY-LICENSES.txt'), notices.join('\n\n--------------------\n\n'))
 await Promise.all([
   writeFile(join(DIST_DIR, 'mmd-hud.json'), `${JSON.stringify(importData, null, 2)}\n`, 'utf8'),
@@ -180,4 +194,4 @@ await Promise.all([
 
 console.log(`Generated ${scripts.length} MMD regex rules in ${DIST_DIR}`)
 console.log(`Bundle parts: ${chunks.length}; largest replacement: ${manifest.largestReplacementLength}/${MAX_REPLACEMENT_LENGTH}`)
-if (!release.published) console.warn(`Model release ${release.repository}@${release.ref} is NOT published. New remote models require the files in release-assets/publish-manifest.json.`)
+if (release && !release.published) console.warn(`Model release ${release.repository}@${release.ref} is NOT published.`)

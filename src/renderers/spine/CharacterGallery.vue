@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { ChevronLeft, ChevronRight } from 'lucide-vue-next'
+import { ArrowLeft, ChevronLeft, ChevronRight } from 'lucide-vue-next'
 import type { SpineCatalogEntry } from './spineTypes'
 import { formatMegabytes } from './formatBytes'
-const props = defineProps<{ entries: SpineCatalogEntry[] }>()
-const emit = defineEmits<{ select: [entry: SpineCatalogEntry] }>()
+const props = withDefaults(defineProps<{ entries: SpineCatalogEntry[]; title?: string; subtitle?: string; showBack?: boolean }>(), {
+  title: 'NIKKE 角色档案', subtitle: '角色档案', showBack: false,
+})
+const emit = defineEmits<{ select: [entry: SpineCatalogEntry]; back: [] }>()
 const query = ref(''), category = ref('all'), runtime = ref('all'), page = ref(1)
 const section = ref<HTMLElement | null>(null)
 const brokenImages = ref(new Set<string>())
@@ -28,8 +30,9 @@ watch(page, () => { section.value?.scrollTo({ top: 0 }) })
   <section ref="section" class="character-gallery" aria-labelledby="character-gallery-title">
     <header class="character-gallery__header">
       <div class="character-gallery__identity">
-        <h1 id="character-gallery-title">NIKKE 角色档案</h1>
-        <p><span aria-hidden="true"></span>{{ entries.length }} 份档案 · {{ entries.reduce((sum, row) => sum + (row.variants?.length ?? 1), 0) }} 个模型</p>
+        <button v-if="showBack" type="button" class="gallery-back" title="返回游戏选择" aria-label="返回游戏选择" @click="emit('back')"><ArrowLeft :size="18" /></button>
+        <div><h1 id="character-gallery-title">{{ title }}</h1>
+        <p><span aria-hidden="true"></span>{{ subtitle }} · {{ entries.length }} 份档案 · {{ entries.reduce((sum, row) => sum + (row.variants?.length ?? 1), 0) }} 个模型</p></div>
       </div>
       <label class="character-gallery__search"><span>筛选角色</span>
         <input v-model="query" type="search" autocomplete="off" placeholder="姓名或角色 ID" aria-label="筛选角色">

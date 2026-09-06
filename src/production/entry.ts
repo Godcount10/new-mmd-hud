@@ -1,8 +1,7 @@
 import { HudRuntime } from '../hud/runtime'
 import { createMmdPlatformAdapter } from '../platform/contracts'
 import type { MmdSdk } from '../platform/sdk'
-import { createSpineStageRenderer } from '../renderers/spineStageRenderer'
-import { remoteNikkeCatalog, remoteNikkeSpineConfig } from '../renderers/spine/nikkeAssets'
+import { instance } from '@hud-instance'
 
 type ProductionHudHandle = {
   runtime: HudRuntime
@@ -13,7 +12,6 @@ declare global {
   interface Window {
   sdk?: MmdSdk
   __MMD_HUD__?: ProductionHudHandle
-  __MMD_DEFAULT_SPINE_ASSET__?: typeof remoteNikkeSpineConfig
   }
 }
 
@@ -28,10 +26,10 @@ function mountProductionHud(): ProductionHudHandle | null {
 
   window.__MMD_HUD__?.destroy()
   globalSdk.stage.open('full')
-  window.__MMD_DEFAULT_SPINE_ASSET__ = remoteNikkeSpineConfig
-  window.__MMD_SPINE_CATALOG__ = window.__MMD_SPINE_CATALOG_OVERRIDE__ ?? remoteNikkeCatalog
   const runtime = new HudRuntime({ platform: createMmdPlatformAdapter(window, globalSdk) })
-  runtime.registerRenderer(createSpineStageRenderer())
+  const modules = instance.createModules(window)
+  for (const feature of modules.features ?? []) runtime.registerFeature(feature)
+  for (const renderer of modules.renderers ?? []) runtime.registerRenderer(renderer)
   runtime.mount()
 
   const handle: ProductionHudHandle = {
@@ -43,7 +41,7 @@ function mountProductionHud(): ProductionHudHandle | null {
   }
   window.__MMD_HUD__ = handle
   runtime.events.on('dispose', () => handle.destroy())
-  globalSdk.debug.log('[MMD HUD] production bundle mounted', globalSdk.version)
+  globalSdk.debug.log('[MMD HUD] production bundle mounted', instance.id, globalSdk.version)
   return handle
 }
 

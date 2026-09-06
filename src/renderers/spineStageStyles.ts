@@ -68,6 +68,27 @@ export const spineStageStyles = String.raw`
   background: var(--stage-bg);
 }
 
+[data-hud="spine-stage"] .spine-game-selector {
+  min-height: 100%; display: grid; align-content: center; justify-items: center;
+  gap: 14px; padding: 40px 24px; background: radial-gradient(circle at 50% 30%, #2a1710 0, var(--stage-bg) 55%);
+  text-align: center;
+}
+[data-hud="spine-stage"] .spine-game-selector__eyebrow { color: var(--stage-orange); font-size: 11px; letter-spacing: .14em; }
+[data-hud="spine-stage"] .spine-game-selector h1 { margin: 0; font-size: clamp(30px, 5vw, 54px); }
+[data-hud="spine-stage"] .spine-game-selector p { max-width: 520px; margin: 0 0 18px; color: var(--stage-muted); }
+[data-hud="spine-stage"] .spine-game-selector__grid { display: grid; grid-template-columns: repeat(2, minmax(240px, 360px)); gap: 14px; width: min(100%, 740px); }
+[data-hud="spine-stage"] .spine-game-card { display: flex; align-items: center; gap: 14px; min-height: 112px; padding: 18px; border: 1px solid var(--stage-line); border-radius: 6px; background: linear-gradient(135deg, #1b1714, #100f0d); text-align: left; cursor: pointer; transition: border-color .2s, transform .2s, background .2s; }
+[data-hud="spine-stage"] .spine-game-card:hover:not(:disabled) { border-color: var(--stage-orange); background: #241710; transform: translateY(-2px); }
+[data-hud="spine-stage"] .spine-game-card:disabled { opacity: .45; cursor: not-allowed; }
+[data-hud="spine-stage"] .spine-game-card__icon { display: grid; place-items: center; width: 52px; height: 52px; border: 1px solid #704020; color: var(--stage-orange-bright); }
+[data-hud="spine-stage"] .spine-game-card__body { display: grid; flex: 1; gap: 5px; min-width: 0; }
+[data-hud="spine-stage"] .spine-game-card__body strong { font-size: 17px; }
+[data-hud="spine-stage"] .spine-game-card__body small { color: var(--stage-muted); font-size: 11px; }
+[data-hud="spine-stage"] .spine-game-card__body em { color: var(--stage-orange); font-size: 11px; font-style: normal; }
+[data-hud="spine-stage"] .spine-game-card__arrow { color: var(--stage-orange); font-size: 24px; }
+[data-hud="spine-stage"] .gallery-back { display: grid; place-items: center; width: 34px; height: 34px; margin-bottom: 8px; border: 1px solid var(--stage-line); background: #15120f; cursor: pointer; }
+[data-hud="spine-stage"] .gallery-back:hover { border-color: var(--stage-orange); color: var(--stage-orange-bright); }
+
 [data-hud="spine-stage"] .character-gallery::-webkit-scrollbar {
   width: 9px;
 }
@@ -683,6 +704,7 @@ export const spineStageStyles = String.raw`
 [data-hud="spine-stage"] .spine-viewport__status button { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--stage-line); border-radius: 4px; min-height: 40px; padding: 8px 12px; background: #181818; cursor: pointer; }
 
 @media (max-width: 680px) {
+  [data-hud="spine-stage"] .spine-game-selector__grid { grid-template-columns: minmax(0, 1fr); }
   [data-hud="spine-stage"] .character-gallery__header {
     position: relative;
     display: grid;

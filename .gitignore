@@ -15,6 +15,7 @@
 /reports/
 /.cache/
 /.vite/
+/.impeccable/review/
 *.log
 
 # Credentials and machine-specific configuration

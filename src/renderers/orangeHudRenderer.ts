@@ -3,9 +3,10 @@ import type { HudFeatureContext } from '../features/types'
 import type { HudRenderer } from './types'
 import OrangeHudApp from './orangeHud/OrangeHudApp.vue'
 import { orangeHudStyles } from './orangeHudStyles'
+import { GameStore } from '../domain/gameStore'
 
 /** Vue-backed HUD renderer. Domain state remains framework-neutral. */
-export function createOrangeHudRenderer(): HudRenderer {
+export function createOrangeHudRenderer(domain = new GameStore()): HudRenderer {
   return {
     id: 'orange-command-hud',
     mount(context) {
@@ -34,7 +35,7 @@ export function createOrangeHudRenderer(): HudRenderer {
         mountPoint = context.document.createElement('div')
         mountPoint.dataset.hudMount = 'orange-command-hud'
         stage.appendChild(mountPoint)
-        app = createApp(OrangeHudApp, { context })
+        app = createApp(OrangeHudApp, { context, domain })
         app.mount(mountPoint)
       }
 

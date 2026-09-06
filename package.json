@@ -5,7 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:live2d": "vite --mode live2d",
+    "dev:dragon-raja": "vite --mode dragon-raja",
+    "prepare:live2d": "node scripts/prepare-live2d-release.mjs",
+    "test:live2d": "node --test tests/live2d-contracts.test.mjs",
     "generate:spine-catalog": "node scripts/generate-spine-catalog.mjs",
+    "generate:brown-dust-catalog": "node scripts/generate-brown-dust-catalog.mjs",
     "generate:spine-thumbnails": "node scripts/generate-spine-thumbnails.mjs",
     "prepare:spine-release": "node scripts/prepare-spine-release.mjs",
     "test:spine": "node --test tests/spine-contracts.test.mjs",
@@ -13,19 +18,35 @@
     "build": "vue-tsc --noEmit && vite build",
     "build:hud:bundle": "vite build --mode hud",
     "build:hud:json": "node scripts/build-role-card-json.mjs",
-    "build:hud": "npm run typecheck && npm run build:hud:bundle && npm run build:hud:json",
+    "build:hud": "node scripts/build-hud.mjs",
+    "build:live2d": "node scripts/build-hud.mjs live2d",
+    "build:dragon-raja": "node scripts/build-hud.mjs dragon-raja",
     "typecheck": "vue-tsc --noEmit"
   },
   "dependencies": {
     "@esotericsoftware/spine-webgl": "^4.0.31",
+    "@pixi/unsafe-eval": "6.5.10",
+    "@rive-app/canvas": "^2.42.0",
+    "gsap": "^3.15.0",
     "lucide-vue-next": "1.0.0",
+    "ogl": "^1.0.11",
+    "pixi-live2d-display": "0.4.0",
+    "pixi.js": "6.5.10",
     "spine-webgl-41": "npm:@esotericsoftware/spine-webgl@4.1.56",
+    "three": "^0.185.1",
     "vue": "^3.5.13"
+  },
+  "overrides": {
+    "pixi-live2d-display": {
+      "gh-pages": "6.3.0"
+    }
   },
   "devDependencies": {
     "@napi-rs/canvas": "1.0.8",
     "@types/node": "^26.4.1",
     "@vitejs/plugin-vue": "^5.2.1",
+    "playwright": "1.58.2",
+    "sharp": "0.35.4",
     "spine-canvas-40": "npm:@esotericsoftware/spine-canvas@4.0.31",
     "spine-canvas-41": "npm:@esotericsoftware/spine-canvas@4.1.56",
     "typescript": "^5.7.3",

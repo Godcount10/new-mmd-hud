@@ -6,14 +6,15 @@ import CharacterGallery from './CharacterGallery.vue'
 import ModelDownloadDialog from './ModelDownloadDialog.vue'
 import SpineViewport from './SpineViewport.vue'
 import type { SpineCatalogEntry, SpineVariant } from './spineTypes'
-import { localNikkeSpineConfig } from './nikkeAssets'
+import SpineGameSelector from './SpineGameSelector.vue'
 
 const props = defineProps<{ context: HudFeatureContext }>()
-const fallback = props.context.window.__MMD_SPINE_ASSET__
-  ?? props.context.window.__MMD_DEFAULT_SPINE_ASSET__ ?? localNikkeSpineConfig
-const catalog: SpineCatalogEntry[] = props.context.window.__MMD_SPINE_CATALOG__?.length
-  ? props.context.window.__MMD_SPINE_CATALOG__
-  : [{ id: fallback.id, name: fallback.label, estimatedBytes: 0, asset: fallback }]
+const catalogs = props.context.window.__MMD_SPINE_GAME_CATALOGS__ ?? {
+  nikke: props.context.window.__MMD_SPINE_CATALOG__?.length ? props.context.window.__MMD_SPINE_CATALOG__ : [],
+}
+const gameNames: Record<string, string> = { nikke: 'NIKKE', 'brown-dust-2': '棕色尘埃 2' }
+const selectedGame = ref<string | null>(null)
+const catalog = ref<SpineCatalogEntry[]>([])
 const selectedEntry = ref<SpineCatalogEntry | null>(null)
 const selectedVariant = ref<SpineVariant | null>(null)
 const pendingEntry = ref<SpineCatalogEntry | null>(null)
@@ -27,6 +28,16 @@ function requestModel(entry: SpineCatalogEntry, variantId?: string): void {
   if (!selectedEntry.value) galleryFocus = previousFocus
   pendingVariant.value = variantId
   pendingEntry.value = entry
+}
+function selectGame(gameId: string): void {
+  selectedGame.value = gameId
+  catalog.value = catalogs[gameId] ?? []
+}
+function returnToGames(): void {
+  selectedEntry.value = null
+  selectedVariant.value = null
+  selectedGame.value = null
+  catalog.value = []
 }
 function closeDialog(): void {
   pendingEntry.value = null
@@ -51,7 +62,8 @@ function changeVariant(event: Event): void {
 </script>
 
 <template>
-  <main class="spine-stage" data-hud="spine-stage" aria-label="NIKKE 模型图鉴">
+  <main class="spine-stage" data-hud="spine-stage" :aria-label="selectedGame ? `${gameNames[selectedGame]} 模型图鉴` : '选择游戏'">
+    <SpineGameSelector v-if="!selectedGame" :catalogs="catalogs" @select="selectGame" />
     <div v-if="selectedEntry && selectedVariant" class="model-stage" :inert="Boolean(pendingEntry)">
       <header class="model-stage__toolbar">
         <button ref="backButton" type="button" class="icon-button" title="返回图鉴" aria-label="返回图鉴" @click="returnToGallery"><ArrowLeft :size="20" /></button>
@@ -68,8 +80,9 @@ function changeVariant(event: Event): void {
       <SpineViewport :key="selectedVariant.id" :config="selectedVariant.asset"
         :host-document="props.context.document" :host-window="props.context.window" />
     </div>
-    <CharacterGallery v-show="!selectedEntry" :entries="catalog" :inert="Boolean(pendingEntry)"
-      :aria-hidden="Boolean(pendingEntry || selectedEntry)" @select="requestModel" />
+    <CharacterGallery v-if="selectedGame && !selectedEntry" :entries="catalog" :title="`${gameNames[selectedGame]} 模型图鉴`"
+      :subtitle="gameNames[selectedGame]" :show-back="true" :inert="Boolean(pendingEntry)"
+      :aria-hidden="Boolean(pendingEntry || selectedEntry)" @select="requestModel" @back="returnToGames" />
     <ModelDownloadDialog v-if="pendingEntry" :entry="pendingEntry" :initial-variant-id="pendingVariant"
       :host-document="props.context.document" @cancel="closeDialog" @confirm="confirmModel" />
   </main>

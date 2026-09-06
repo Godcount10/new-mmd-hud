@@ -1,0 +1,8 @@
+Live2D Cubism Core
+(C) Live2D Inc. All rights reserved.
+Source: https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js
+SHA-256: 25ae938cb4fe282ce189b357bcc97e603d1e1f7ec78bf04150d401c23cdc792f
+This file is Redistributable Code, provided as part of the HUD application, not licensed under MIT.
+https://www.live2d.com/eula/live2d-proprietary-software-license-agreement_en.html
+https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html
+Live2D SDK release/commercial licensing may apply independently of model ownership.

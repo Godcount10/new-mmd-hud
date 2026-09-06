@@ -203,7 +203,20 @@ export class MockMmdRuntime {
 
     this.stage = this.frameDocument.createElement('section')
     this.stage.dataset.chat = 'author-stage'
-    this.stage.style.display = 'none'
+    // The real MMD stage is an SDK-owned full-viewport layer. Keep the mock
+    // stage out of normal document flow so HUDs render like the production stage,
+    // rather than collapsing to zero height after the native shell elements.
+    this.stage.style.cssText = [
+      'display:none',
+      'position:fixed',
+      'inset:0',
+      'width:100vw',
+      'height:100vh',
+      'z-index:3000',
+      'padding:0',
+      'overflow:hidden',
+      'background:transparent',
+    ].join(';')
 
     this.composer = this.frameDocument.createElement('footer')
     this.composer.dataset.chat = 'composer'

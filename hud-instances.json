@@ -1,0 +1,25 @@
+{
+  "nikke": {
+    "title": "NIKKE Spine",
+    "localEntry": "src/instances/nikke/local.ts",
+    "remoteEntry": "src/instances/nikke/remote.ts",
+    "releaseFile": "spine-release.json",
+    "forbiddenModules": ["/live2d/", "pixi-live2d-display", "/@pixi/", "/domain/", "/orangeHud"],
+    "licenses": ["vue", "lucide-vue-next", "@esotericsoftware/spine-webgl", "spine-webgl-41"]
+  },
+  "live2d": {
+    "title": "Azur Lane Live2D",
+    "localEntry": "src/instances/live2d/local.ts",
+    "remoteEntry": "src/instances/live2d/remote.ts",
+    "releaseFile": "live2d-release.json",
+    "forbiddenModules": ["/spine/", "spine-webgl", "spine-core", "spineStage", "nikke", "/domain/", "/orangeHud"],
+    "licenses": ["vue", "lucide-vue-next", "pixi.js", "pixi-live2d-display"]
+  },
+  "dragon-raja": {
+    "title": "Dragon Raja",
+    "localEntry": "src/instances/dragon-raja/local.ts",
+    "remoteEntry": "src/instances/dragon-raja/remote.ts",
+    "forbiddenModules": ["/live2d/", "pixi-live2d-display", "/spine/", "spine-webgl", "spine-core"],
+    "licenses": ["vue", "gsap", "ogl", "three", "@rive-app/canvas"]
+  }
+}
